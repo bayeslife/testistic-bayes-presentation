@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Source Code Branching Model</title>
+
+  <style>
+      {{> ../../css/style.css}}
+
+      {{> ../../css/bootstrap.css}}
+   </style>
+
+ <script type="text/javascript">
+    {{> jquery.hbs}}
+    {{> bootstrap.js}}
+  </script>
+  
+  <script type="text/javascript">
+    {{> ../../lib/d3.v5.js}}
+  </script>
+
+</head>
+<body>
+  <div class="container">
+
+  <h1>Testistic Bayes Visualization</h1>
+
+  Version {{version}}
+
+  <script>
+  var sampledata ={{{asJson sampledata}}}
+  </script>
+
+  {{> visualization.hbs }}
+
+<script type="text/javascript">
+  var coordinator = d3.dispatch("modelchange");
+  {{> ../../../../build/bundle.js}}
+</script>
+
+
+</div>
+
+</body>
+
+</html>
