@@ -42,14 +42,12 @@ var relationships = [{
   PF: 70
 }]
 
-
 var testRelationships = relationships.map((rel)=>Bayes.TestRelationship.create(rel));
 var modelState = Bayes.TestModelState.create(testRelationships)
 
 var Presentation = require('./presentation.js')
 var presentation = Presentation(coordinator, modelState);
 var rendercontext = presentation.render(window.innerWidth,0.8*window.innerHeight,"#model");
-
 
 coordinator.on("modelchange",function(state){
 

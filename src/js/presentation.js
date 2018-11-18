@@ -12,7 +12,6 @@ function Presentation(coordinator, modelState){
   var nodesize=30
 
   var svg, rootg
-  var scaleX,scaleY;
 
   var renderContext;
 
@@ -22,7 +21,8 @@ function Presentation(coordinator, modelState){
 
  var width,height
 
- var viewState ='View Probability'
+ var viewStates =[ 'View Probability', 'View Frequency']
+ var viewState = viewStates[0]
 
  function midX(d){
    return d.source.x + (d.target.x - d.source.x)/2 
@@ -60,19 +60,12 @@ function renderConfidence(nodes){
     .text((d) => {
       var c = d.data.content
       if(d.data.type==='modelState'){
-        var p = c.getProbabilities()
-        if(viewState==='View Probability'){
-          return p.pQ
-        }else {
-          return p.Q
-        }
+        c = c.getProbabilities() 
+      }
+      if(viewState===viewStates[0]){
+        return c.pQ
       }else {
-        if(viewState==='View Probability'){
-          return c.pQ
-        }else {
-          return c.Q
-        }
-        
+        return c.Q
       }
      })
 
@@ -91,22 +84,16 @@ function renderConfidence(nodes){
     .text((d) => {
       var c = d.data.content
       if(d.data.type==='modelState'){
-        var p = c.getProbabilities()
-        if(viewState==='View Probability'){
-          return p.pP
-        }else {
-          return p.P
-        }
+        c = c.getProbabilities()
+      }
+      if(viewState===viewStates[0]){
+        return c.pP
       }else {
-        if(viewState==='View Probability'){
-          return c.pP
-        }else {
-          return c.P
-        }
-        
+        return c.P
       }
      });
 }
+
  function renderRelationship(links){
     links.append("rect")
       .classed('content', true)
@@ -118,7 +105,7 @@ function renderConfidence(nodes){
       .attr("x",(d)=>midX(d) - nodesize + textX() )
       .attr("y",(d)=>midY(d) - nodesize + textY() )
       .text((d) => {
-        if(viewState==='View Probability'){
+        if(viewState===viewStates[0]){
           return d.target.data.content.pQS
         }else {
           return d.target.data.content.QS
@@ -135,7 +122,7 @@ function renderConfidence(nodes){
       .attr("x",(d)=>midX(d) - nodesize + textX() )
       .attr("y",(d)=>midY(d) + textY() )
       .text((d) => {
-        if(viewState==='View Probability'){
+        if(viewState===viewStates[0]){
           return d.target.data.content.pQF
         }else {
           return d.target.data.content.QF
@@ -152,7 +139,7 @@ function renderConfidence(nodes){
       .attr("x",(d)=>midX(d)  + textX() )
       .attr("y",(d)=>midY(d) - nodesize + textY() )
       .text((d) => {
-        if(viewState==='View Probability'){
+        if(viewState===viewStates[0]){
           return d.target.data.content.pPS
         }else {
           return d.target.data.content.PS
@@ -169,7 +156,7 @@ function renderConfidence(nodes){
       .attr("x",(d)=>midX(d)  + textX() )
       .attr("y",(d)=>midY(d)  + textY() )
       .text((d) => {
-        if(viewState==='View Probability'){
+        if(viewState===viewStates[0]){
           return d.target.data.content.pPF
         }else {
           return d.target.data.content.PF
@@ -262,7 +249,8 @@ function renderConfidence(nodes){
       id: contextNode.data.id,
       S: true
     }
-    modelState.updateGiven(testresult)
+    var workings = modelState.updateGiven(testresult)
+    renderContext.renderWorkings(workings)
     renderContext.update();
   }
 
@@ -271,7 +259,8 @@ function renderConfidence(nodes){
       id: contextNode.data.id,
       F: true
     }
-    modelState.updateGiven(testresult)
+    var workings = modelState.updateGiven(testresult)
+    renderContext.renderWorkings(workings)
     renderContext.update();
   }
 
@@ -290,20 +279,19 @@ function renderConfidence(nodes){
 
         tooltip = chart.append("div").attr("id", "tooltip");
 
-        scaleX = d3.scaleLinear().domain([0,1]).range([0, width])
-        scaleY = d3.scaleLinear().domain([0,1]).range([0,height])
-
         d3.select("#toggle").on("click", (d)=>{
-          if(viewState==='View Probability'){
-            viewState = 'View Frequency'
+          if(viewState===viewStates[0]){
+            viewState = viewStates[1]
           }else {
-            viewState = 'View Probability'
+            viewState = viewStates[0]
           }
           d3.select("#toggle").text(viewState)
           presentation.update();
         })
-
-    
+        d3.select("#reset").on("click", (d)=>{
+          modelState.reset()
+          presentation.update();
+        })
 
         this.update();
 
@@ -312,8 +300,8 @@ function renderConfidence(nodes){
 
     update: async function(){
 
-      svg.selectAll("g").remove();
-      rootg = svg.append("g").attr("transform","translate(0,100)")
+      svg.selectAll(".hierarchy").remove();
+      rootg = svg.append("g").classed('hierarchy',true).attr("transform","translate(0,100)")
 
       var modelHierarchy = getHierarchy(modelState)
 
@@ -369,6 +357,116 @@ function renderConfidence(nodes){
         renderConfidence(d)  
       }
     },
+
+    renderWorkings: async function(update) {
+      svg.selectAll(".working").remove();
+      var working = svg.append("g").classed('working',true).attr("transform","translate(0,50)")      
+    
+      var scale = d3.scaleLinear().domain([0,1]).range([0, nodesize])
+      {
+        working.append('rect')
+          .classed('content', true)
+          .classed('quality', true)
+          .attr('x',0)
+          .attr('y',0)
+          .attr('width', nodesize)
+          .attr('height', scale(update.workings.prior.pQ))
+        working.append("text")
+          .attr("x",0)
+          .attr("y", 0)
+          .text((d) => {
+            return update.workings.prior.pQ
+          });
+        working.append('rect')
+          .classed('content', true)
+          .classed('poor', true)
+          .attr('x',0)
+          .attr('y',nodesize)
+          .attr('width', nodesize)
+          .attr('height', scale(update.workings.prior.pP))
+        working.append("text")
+          .attr("x",0)
+          .attr("y", nodesize)
+          .text((d) => {
+            return update.workings.prior.pP
+          });
+      }
+      {
+        working.append('rect')
+          .classed('content', true)
+          .classed('quality', true)
+          .attr('x',2*nodesize)
+          .attr('y',0)
+          .attr('width', nodesize)
+          .attr('height', scale(update.workings.likelihood.lQ))
+        
+          working.append("text")
+          .attr("x",2*nodesize)
+          .attr("y",0)
+          .text((d) => {
+            return (update.workings.likelihood.QS ? update.workings.likelihood.QS : update.workings.likelihood.QF) +'/'+update.workings.likelihood.Q
+          });
+        working.append('rect')
+          .classed('content', true)
+          .classed('poor', true)
+          .attr('x',2*nodesize)
+          .attr('y',nodesize)
+          .attr('width', nodesize)
+          .attr('height', scale(update.workings.likelihood.lP))
+        working.append("text")
+          .attr("x",2*nodesize)
+          .attr("y",nodesize)
+          .text((d) => {
+            return (update.workings.likelihood.PS ? update.workings.likelihood.PS : update.workings.likelihood.PF) +'/'+update.workings.likelihood.P
+          });
+      }
+      {// posterior
+        working.append('rect')
+          .classed('content', true)
+          .classed('quality', true)
+          .attr('x',4*nodesize)
+          .attr('y',0)
+          .attr('width', nodesize)
+          .attr('height', scale(update.workings.posterior.pQ))
+        working.append("text")
+          .attr("x",4*nodesize)
+          .attr("y", 0)
+          .text((d) => {
+            return update.workings.posterior.pQ
+          });
+
+        working.append('rect')
+          .classed('content', true)
+          .classed('poor', true)
+          .attr('x',4*nodesize)
+          .attr('y',nodesize)
+          .attr('width', nodesize)
+          .attr('height', scale(update.workings.posterior.pP))
+        working.append("text")
+          .attr("x",4*nodesize)
+          .attr("y", nodesize)
+          .text((d) => {
+            return update.workings.posterior.pP
+          });
+      }
+      {
+        var h = scale(update.pQ)
+        working.append('rect')
+          .classed('content', true)
+          .classed('quality', true)
+          .attr('x',6*nodesize)
+          .attr('y',0)
+          .attr('width', nodesize)
+          .attr('height', h)
+          working.append('rect')
+          .classed('content', true)
+          .classed('poor', true)
+          .attr('x',6*nodesize)
+          .attr('y',h)
+          .attr('width', nodesize)
+          .attr('height', scale(update.pP))
+      }
+    }
   }
 
   return renderContext;

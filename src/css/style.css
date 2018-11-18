@@ -14,6 +14,13 @@
   stroke: red;
 }
 
+.quality {
+  fill: #4F4;
+}
+.poor {
+  fill: #F44;
+}
+
 .relationship {
   font-size: 0.7em;
   font-family: sans-serif;
