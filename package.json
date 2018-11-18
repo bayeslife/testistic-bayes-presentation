@@ -1,6 +1,6 @@
 {
   "name": "testistic-bayes-presentation",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
   "main": "index.js",
   "dependencies": {
@@ -41,7 +41,7 @@
     "generate": "DEBUG=* gulp build",
     "clean": "rm -rf node_modules && rm -rf dist/* rm -rf build/*",
     "test": "./node_modules/mocha/bin/mocha --recursive",
-    "start": "./node_modules/.bin/nodemon --watch index.js --watch gulp.js --watch src/ --watch src/js --watch test/ --exec 'npm run compile && npm run package && npm run generate'"
+    "start": "./node_modules/.bin/nodemon --exec 'npm run compile && npm run package && npm run generate'"
   },
   "author": "",
   "license": "ISC"

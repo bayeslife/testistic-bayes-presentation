@@ -1,19 +1,30 @@
 
-.role circle {
-  background-color: #F2F2F2;
+.content {
+   fill: #EEF;
+   stroke: steelblue;
+   opacity: 0.9;
+   font: 10px sans-serif;
 }
 
-.node rect {
-  cursor: move;
-  shape-rendering: crispEdges;
+.link {
 }
 
-.node text {
-  pointer-events: none;
-  text-shadow: 1px 1px 2px #fff;
-  font-size: 0.8em;
+.selected {
+  color: #F00;
+  stroke: red;
+}
+
+.relationship {
+  font-size: 0.7em;
   font-family: sans-serif;
+  padding: 3px;
+  fill: #F2F2F2;
+  -webkit-box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.4);
+  -mox-box-shadow: 0px 0px 0px 5px rgba(0, 0, 0, 0.4);
+  box-shadow: 0px 0px 5px rbga(0, 0, 0, 0.4);
+  pointer-events: none;
 }
+
 
 #tooltip {
   position: absolute;
