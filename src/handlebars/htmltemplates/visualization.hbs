@@ -12,6 +12,20 @@
 <P/>
 A model demonstrating updating plausibilities of a quality service given test results
 <br/>
+<a href="#" onclick="coordinator.call('highlight',this,'.test')">A set of tests is represented as leaves of the relationship tree</a>
+<br/>
+<a href="#" onclick="coordinator.call('highlight',this,'.link')">A set of relationships</a>
+<br/>
+<a href="#" onclick="coordinator.call('highlight',this,'.plausibility')">A resulting plasubility of quality</a>
+
+<p/>
+Selecting a test result will update the plausibility.
+The update involves combining the 
+<a href="#" onclick="coordinator.call('highlight',this,'.prior')">prior plausibility</a>
+<a href="#" onclick="coordinator.call('highlight',this,'.likelihood')">with the likelihood</a>
+<a href="#" onclick="coordinator.call('highlight',this,'.posterior')">which is then normalized</a> 
+<a href="#" onclick="coordinator.call('highlight',this,'.normalized')">to render the new plausiblity</a>
+<p/>
 
 <button id="toggle">View Probability</button>
 <button id="reset">Reset</button>

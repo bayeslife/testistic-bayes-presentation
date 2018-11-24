@@ -10,8 +10,19 @@
 }
 
 .selected {
-  color: #F00;
-  stroke: red;
+  color: black;
+  stroke-width: 4;
+}
+
+.highlight {
+  fill: yellow;
+  color: yellow;
+  stroke: yellow;
+  stroke-width:  2;
+}
+
+.test {
+  fill: #AAF;
 }
 
 .quality {

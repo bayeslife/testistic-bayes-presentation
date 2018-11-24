@@ -50,6 +50,7 @@ function renderConfidence(nodes){
     .attr("width", nodesize)
     .attr("height", nodesize)
     .on("click", mouseclickS)
+    .classed("quality", true)
     .classed('selected', (d)=>{
       return d.data.content.evidence==='S'
     })
@@ -75,6 +76,7 @@ function renderConfidence(nodes){
     .attr("width", nodesize)
     .attr("height", nodesize)
     .on("click", mouseclickF)
+    .classed("poor", true)
     .classed('selected', (d)=>{
       return d.data.content.evidence==='F'
     })
@@ -266,6 +268,14 @@ function renderConfidence(nodes){
 
   renderContext = {
 
+    highlight: function(entity) {
+      var tests = svg.selectAll(entity)
+      tests.classed('highlight',true)
+      setTimeout(()=>{
+        tests.classed('highlight',false)
+      },2000)
+    },
+
     render: function(dwidth,dheight,divselect){
       width=dwidth
       height=dheight
@@ -318,7 +328,7 @@ function renderConfidence(nodes){
 
         var l = ln.append("g")
         //.on("click", mouseclick)
-        .on("mouseover", mouseovered)
+        //.on("mouseover", mouseovered)
         .on("mouseout", mouseouted)
         .classed("link", true)
         .classed('content', true)
@@ -331,6 +341,7 @@ function renderConfidence(nodes){
 
         renderRelationship(l)
       }
+
       {
         var modelNodes = modelHierarchy.descendants();
         var ds = rootg.selectAll(".node").data(modelNodes,(d)=>{
@@ -348,6 +359,12 @@ function renderConfidence(nodes){
           .on("mouseout", mouseouted)
           .classed("node", true)
           .classed('content', true)
+          .classed('test', (d)=>{
+            return d.data.type==='relationship'
+          })
+          .classed('plausibility', (d)=>{
+            return d.data.type==='modelState'
+          })
           
         // d.call(d3.drag()
         //       .on("start",startdrag)
@@ -367,6 +384,7 @@ function renderConfidence(nodes){
         working.append('rect')
           .classed('content', true)
           .classed('quality', true)
+          .classed('prior', true)
           .attr('x',0)
           .attr('y',0)
           .attr('width', nodesize)
@@ -380,6 +398,7 @@ function renderConfidence(nodes){
         working.append('rect')
           .classed('content', true)
           .classed('poor', true)
+          .classed('prior', true)
           .attr('x',0)
           .attr('y',nodesize)
           .attr('width', nodesize)
@@ -395,6 +414,7 @@ function renderConfidence(nodes){
         working.append('rect')
           .classed('content', true)
           .classed('quality', true)
+          .classed('likelihood', true)
           .attr('x',2*nodesize)
           .attr('y',0)
           .attr('width', nodesize)
@@ -409,6 +429,7 @@ function renderConfidence(nodes){
         working.append('rect')
           .classed('content', true)
           .classed('poor', true)
+          .classed('likelihood', true)
           .attr('x',2*nodesize)
           .attr('y',nodesize)
           .attr('width', nodesize)
@@ -424,6 +445,7 @@ function renderConfidence(nodes){
         working.append('rect')
           .classed('content', true)
           .classed('quality', true)
+          .classed('posterior', true)
           .attr('x',4*nodesize)
           .attr('y',0)
           .attr('width', nodesize)
@@ -438,10 +460,12 @@ function renderConfidence(nodes){
         working.append('rect')
           .classed('content', true)
           .classed('poor', true)
+          .classed('posterior', true)
           .attr('x',4*nodesize)
           .attr('y',nodesize)
           .attr('width', nodesize)
           .attr('height', scale(update.workings.posterior.pP))
+      
         working.append("text")
           .attr("x",4*nodesize)
           .attr("y", nodesize)
@@ -454,17 +478,31 @@ function renderConfidence(nodes){
         working.append('rect')
           .classed('content', true)
           .classed('quality', true)
+          .classed('normalized', true)
           .attr('x',6*nodesize)
           .attr('y',0)
           .attr('width', nodesize)
           .attr('height', h)
+        working.append("text")
+          .attr("x",6*nodesize)
+          .attr("y", 0)
+          .text((d) => {
+            return update.pQ
+          });
           working.append('rect')
           .classed('content', true)
           .classed('poor', true)
+          .classed('normalized', true)
           .attr('x',6*nodesize)
           .attr('y',h)
           .attr('width', nodesize)
           .attr('height', scale(update.pP))
+          working.append("text")
+          .attr("x",6*nodesize)
+          .attr("y", nodesize)
+          .text((d) => {
+            return update.pP
+          });
       }
     }
   }
